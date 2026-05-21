@@ -1,36 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Testing Room Seating</title>
+<title>Display</title>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBf...",
+  authDomain: "testingroom-6aee1.firebaseapp.com",
+  projectId: "testingroom-6aee1",
+  storageBucket: "testingroom-6aee1.appspot.com",
+  messagingSenderId: "526946321141",
+  appId: "1:526946321141:web:aa78726ade63189f7bbbc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const urlParams = new URLSearchParams(window.location.search);
+const loc = urlParams.get('loc').toLowerCase();
+
+const grid = document.getElementById("grid");
+
+function speak(text){
+  const msg = new SpeechSynthesisUtterance(text + " Please proceed to Testing Room");
+  speechSynthesis.speak(msg);
+}
+
+window.onload=()=>{
+  const ref = doc(db,"seats",loc);
+
+  onSnapshot(ref,(docSnap)=>{
+    const data = docSnap.data();
+    const grid = document.getElementById("grid");
+    grid.innerHTML="";
+
+    for(let i=1;i<=20;i++){
+      grid.innerHTML += `
+      <div>
+        <h3>Seat ${i}</h3>
+        <h1>${data["seat"+i]||0}</h1>
+      </div>`;
+    }
+
+    if(data.lastCall){
+      speak(data.lastCall);
+    }
+  });
+}
+
+</script>
+
 <style>
-body {font-family: Arial; text-align:center; background:#141233; color:white;}
-.container {display:flex; flex-wrap:wrap; justify-content:center; gap:20px;}
-.card {background:white; color:black; padding:20px; border-radius:10px; width:220px;}
-button {padding:10px 20px; margin:5px;}
+body {background:black;color:white;text-align:center;}
 </style>
+
 </head>
 
 <body>
 
-<h1>TESTING ROOM SEATING</h1>
-
-<div class="container">
-<script>
-const locations = ["ILOILO","BOHOL","QC-BT","QC-GBF","ALABANG"];
-
-locations.forEach(loc=>{
-  document.write(`
-    <div class="card">
-      <h3>${loc}</h3>
-      <a href="admin.html?loc=${loc <button>ADMIN</button>
-      </a>
-      <a href="display.html?loc=${loc <button>DISPLAY</button>
-      </a>
-    </div>
-  `);
-});
-</script>
-</div>
+<h1>PLEASE PROCEED TO TESTING ROOM</h1>
+<div id="grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
 
 </body>
 </html>
