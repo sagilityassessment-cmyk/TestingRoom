@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin</title>
+<style>
+body {font-family: Arial; text-align:center;}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  padding:20px;
+}
+.box {border:1px solid gray; padding:10px;}
+input {width:60px;}
+</style>
+</head>
+
+<body>
+
+<h2 id="title"></h2>
+<div class="grid" id="grid"></div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const loc = urlParams.get('loc');
+document.getElementById("title").innerText = "Admin - " + loc;
+
+const db = JSON.parse(localStorage.getItem(loc)) || {};
+
+const grid = document.getElementById("grid");
+
+for(let i=1;i<=20;i++){
+  const val = db[i] || "";
+
+  grid.innerHTML += `
+    <div class="box">
+      <h4>Seat ${i}</h4>
+      <input id="seat${i}" value="${val}">
+      <br><br>
+      <button onclick="callSeat(${i})">CALL</button>
+    </div>`;
+}
+
+function callSeat(seat){
+  const value = document.getElementById("seat"+seat).value;
+
+  db[seat] = value;
+  localStorage.setItem(loc, JSON.stringify(db));
+
+  // send update event
+  localStorage.setItem("update", Date.now());
+
+  alert("Called Seat " + seat);
+}
+</script>
+
+</body>
+</html>
+``
