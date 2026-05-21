@@ -21,9 +21,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const urlParams = new URLSearchParams(window.location.search);
-const loc = urlParams.get('loc').toLowerCase();
+const loc = urlParams.get('loc').toUpperCase();
 
-// ✅ ADD THIS (audio unlock)
+// ✅ AUDIO ENABLE
 let audioEnabled = false;
 
 window.enableAudio = () => {
@@ -31,49 +31,88 @@ window.enableAudio = () => {
   alert("Audio Enabled ✅");
 };
 
-// ✅ MODIFY SPEAK
 function speak(text){
   if(!audioEnabled) return;
 
   const msg = new SpeechSynthesisUtterance(
-    text + ", Please proceed to Testing Room"
+    text + ", Please proceed to testing room"
   );
   speechSynthesis.speak(msg);
 }
 
 window.onload = ()=>{
-  const ref = doc(db,"seats",loc);
+  const ref = doc(db,"seats",loc.toLowerCase());
 
   onSnapshot(ref,(docSnap)=>{
     const data = docSnap.data();
-    const grid = document.getElementById("grid");
-    grid.innerHTML="";
 
-    for(let i=1;i<=20;i++){
-      grid.innerHTML += `
-      <div>
-        <h3>Seat ${i}</h3>
-        <h1>${data["seat"+i]||0}</h1>
-      </div>`;
-    }
-
+    // ✅ SHOW BIG SCREEN FIRST
     if(data.lastCall){
+      showBig(data.lastCall);
       speak(data.lastCall);
+
+      // ✅ AFTER 5 SECONDS → BACK TO GRID
+      setTimeout(()=>{
+        showGrid(data);
+      },5000);
+
+    } else {
+      showGrid(data);
     }
   });
+}
+
+// ✅ BIG SCREEN (YOUR FIRST IMAGE)
+function showBig(text){
+  const main = document.getElementById("main");
+  main.innerHTML = `
+  <div style="background:#2d1b69;color:white;padding:20px;">
+    <h2 style="margin:0;">${loc} PLEASE PROCEED TO TESTING ROOM</h2>
+  </div>
+
+  <div style="background:white;color:#2d1b69;padding:80px;">
+    <h1 style="font-size:80px;margin:0;">${text.toUpperCase()}</h1>
+    <p style="font-size:30px;">Please proceed to the testing room</p>
+  </div>
+  `;
+}
+
+// ✅ GRID (YOUR SECOND IMAGE)
+function showGrid(data){
+  let html = `
+  <div style="background:#2d1b69;color:white;padding:20px;">
+    <h2 style="margin:0;">${loc} PLEASE PROCEED TO TESTING ROOM</h2>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);text-align:center;">
+  `;
+
+  for(let i=1;i<=20;i++){
+    html += `
+    <div style="border:1px solid #ccc;padding:20px;">
+      <h3>SEAT ${i}</h3>
+      <h1>${data["seat"+i]||0}</h1>
+    </div>`;
+  }
+
+  html += `</div>`;
+
+  document.getElementById("main").innerHTML = html;
 }
 
 </script>
 
 <style>
 body {
+  margin:0;
+  font-family: Arial;
   background:black;
-  color:white;
-  text-align:center;
 }
 button {
+  position:fixed;
+  top:10px;
+  right:10px;
   padding:10px;
-  margin:10px;
 }
 </style>
 
@@ -81,12 +120,9 @@ button {
 
 <body>
 
-<h1>PLEASE PROCEED TO TESTING ROOM</h1>
-
-<!-- ✅ ADD THIS BUTTON -->
 <button onclick="enableAudio()">START DISPLAY</button>
 
-<div id="grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+<div id="main"></div>
 
 </body>
 </html>
