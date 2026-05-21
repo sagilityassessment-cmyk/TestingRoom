@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Testing Room Seating</title>
+<style>
+body {font-family: Arial; text-align:center; background:#141233; color:white;}
+.container {display:flex; flex-wrap:wrap; justify-content:center; gap:20px;}
+.card {
+  background:white; color:black; padding:20px; border-radius:10px; width:220px;
+}
+button {padding:10px 20px; margin:5px;}
+</style>
+</head>
+
+<body>
+
+<h1>TESTING ROOM SEATING</h1>
+<p>Select your location</p>
+
+<div class="container">
+
+<script>
+const locations = ["ILOILO","BOHOL","QC-BT","QC-GBF","ALABANG"];
+
+locations.forEach(loc=>{
+  document.write(`
+    <div class="card">
+      <h3>${loc}</h3>
+      <a href="admin.html?loc=${    <button>ADMIN</button>
+      </a>
+      <a href="display.html?loc       <button>DISPLAY</button>
+      </a>
+    </div>
+  `);
+});
+</script>
+
+</div>
+
+</body>
+</html>
