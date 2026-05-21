@@ -23,14 +23,25 @@ const db = getFirestore(app);
 const urlParams = new URLSearchParams(window.location.search);
 const loc = urlParams.get('loc').toLowerCase();
 
-const grid = document.getElementById("grid");
+// ✅ ADD THIS (audio unlock)
+let audioEnabled = false;
 
+window.enableAudio = () => {
+  audioEnabled = true;
+  alert("Audio Enabled ✅");
+};
+
+// ✅ MODIFY SPEAK
 function speak(text){
-  const msg = new SpeechSynthesisUtterance(text + " Please proceed to Testing Room");
+  if(!audioEnabled) return;
+
+  const msg = new SpeechSynthesisUtterance(
+    text + ", Please proceed to Testing Room"
+  );
   speechSynthesis.speak(msg);
 }
 
-window.onload=()=>{
+window.onload = ()=>{
   const ref = doc(db,"seats",loc);
 
   onSnapshot(ref,(docSnap)=>{
@@ -55,7 +66,15 @@ window.onload=()=>{
 </script>
 
 <style>
-body {background:black;color:white;text-align:center;}
+body {
+  background:black;
+  color:white;
+  text-align:center;
+}
+button {
+  padding:10px;
+  margin:10px;
+}
 </style>
 
 </head>
@@ -63,7 +82,12 @@ body {background:black;color:white;text-align:center;}
 <body>
 
 <h1>PLEASE PROCEED TO TESTING ROOM</h1>
+
+<!-- ✅ ADD THIS BUTTON -->
+<button onclick="enableAudio()">START DISPLAY</button>
+
 <div id="grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
 
 </body>
 </html>
+``
