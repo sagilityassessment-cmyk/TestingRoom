@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Display</title>
+<style>
+body {font-family: Arial; text-align:center; background:black; color:white;}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+  padding:20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 id="title"></h2>
+<div class="grid" id="grid"></div>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+const loc = urlParams.get('loc');
+
+document.getElementById("title").innerText = "DISPLAY - " + loc;
+
+function load(){
+  const data = JSON.parse(localStorage.getItem(loc)) || {};
+  const grid = document.getElementById("grid");
+  grid.innerHTML="";
+
+  for(let i=1;i<=20;i++){
+    grid.innerHTML += `
+      <div>
+        <h3>Seat ${i}</h3>
+        <h1>${data[i] || 0}</h1>
+      </div>`;
+  }
+}
+
+load();
+
+// auto update when admin changes
+window.addEventListener("storage", function(){
+  load();
+});
+
+// voice
+window.addEventListener("storage", function(){
+  const msg = new SpeechSynthesisUtterance("Please proceed to testing room");
+  speechSynthesis.speak(msg);
+});
+</script>
+
+</body>
+</html>
+``
